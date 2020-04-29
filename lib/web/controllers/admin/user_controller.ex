@@ -131,6 +131,8 @@ defmodule Web.Admin.UserController do
     end
   end
 
+  # This will likely need to change to take into account the certification, or be part of the certification flow
+  # for a user whose account had been decertified either manually or automatically.
   def restore_challenge_access(conn, %{"user_id" => user_id, "challenge_id" => challenge_id}) do
     with {:ok, user} <- Accounts.get(user_id),
          {:ok, challenge} <- Challenges.get(challenge_id),
@@ -140,4 +142,8 @@ defmodule Web.Admin.UserController do
       |> redirect(to: Routes.admin_user_path(conn, :show, user.id))
     end
   end
+
+  # Admin can see the certification that will expire, and create a new one,
+  # as they are asserting that the user has the need to continue their access
+  # to the system and their assigned challenges
 end

@@ -4,6 +4,10 @@ defmodule Web.Admin.ReportsController do
   alias ChallengeGov.Reports
   alias Web.Admin.ReportsView
 
+  # add new certification report, downloads by year, with the same year filter like the security logs
+  # just gives a CSV of each certification record, get the emails and roles like the security log does,
+  # we may want to just put those as columns on the certification
+
   def new(conn, _params) do
     %{current_user: user} = conn.assigns
 

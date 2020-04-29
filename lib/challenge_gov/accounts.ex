@@ -570,6 +570,12 @@ defmodule ChallengeGov.Accounts do
   def is_decertified?(%{status: "decertified"}), do: true
   def is_decertified?(_user), do: false
 
+  def active_certification_for_user(user) do
+    # look up for a current certification, returns nil if there isn't one
+    # %Certification{user_id: #, approver_id: #, requested_on, active_on, expires_on}
+    # select * from users where user_id = user.id and active_on < current_time and current_time < expires_on
+  end
+
   @doc """
   Activate a user. Change status, allows login
   """
@@ -582,6 +588,11 @@ defmodule ChallengeGov.Accounts do
     result =
       Ecto.Multi.new()
       |> Ecto.Multi.update(:user, changeset)
+      # Only on the first time the user is activated
+      # Create the certification record for this user, with the originator as the certifiying user
+      # %Certification{user_id: #, approver_id: #, requested_on, active_on, expires_on}
+      # Sets the expiration to whatever the certification period is Security.decertify_days
+      # This and other functions related to activation, deactivation, decertification may need to change to make this work
       |> Ecto.Multi.run(:log, fn _repo, _changes ->
         SecurityLogs.track(%{
           originator_id: originator.id,
@@ -787,6 +798,11 @@ defmodule ChallengeGov.Accounts do
     |> Repo.update()
   end
 
+  # similar to the 90 day check, check for users to decertify
+  # Find active users who no longer have a certification record that is current
+  # %Certification{user_id: #, approver_id: #, requested_on, active_on, expires_on}
+  # active_on < Now < expires_on => still valid, otherwise decertify
+  # This doesn't happen to solvers, only non-solver roles
   @doc """
   check for activity in last 90 days
   """

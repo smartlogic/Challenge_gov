@@ -18,6 +18,8 @@ defmodule Web.Plugs.CheckUserStatus do
           |> redirect(to: Routes.admin_terms_path(conn, :pending))
           |> halt()
 
+        # Many of these need to change so that the user can come in and be told how to try and regain access
+
         "suspended" ->
           conn
           |> clear_flash()
@@ -41,6 +43,9 @@ defmodule Web.Plugs.CheckUserStatus do
           |> clear_session()
           |> redirect(to: Routes.session_path(conn, :new))
           |> halt()
+
+        # For decertified, they would request a new certification which will make a pending review certification record in the database
+        # This is a record with their id, and the requested_on, but no approver, activate on, and no expires on.
 
         "decertified" ->
           conn
