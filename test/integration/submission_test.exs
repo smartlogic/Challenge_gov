@@ -115,4 +115,10 @@ defmodule ChallengeGov.SubmissionTest do
     |> visit("/dev_accounts")
     |> click(button("Solver Active"))
   end
+
+  defp logout(session, user_email) do
+    session
+    |> click(link(user_email))
+    |> click(link("Logout"))
+  end
 end

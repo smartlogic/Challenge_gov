@@ -113,6 +113,8 @@ jobs:
       - run: mix ecto.migrate
       - run: mix run priv/repo/seeds.exs
       - run: mix test
+      - store_artifacts:
+          path: screenshots
 
   assets:
     parallelism: 1
